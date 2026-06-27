@@ -1,58 +1,36 @@
-# Lakshmi Steels AI - No-Code Data Cleaning & BI Dashboard
-
-Lakshmi Steels AI is an enterprise-grade automated data cleaning, visual ETL pipeline, dynamic charts dashboarding, predictive forecasting, and conversational chat co-pilot platform.
-
----
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-Follow these simple steps to run both backend and frontend applications locally on your machine.
+First, run the development server:
 
-### Prerequisites
-Make sure you have Node.js (v18+) and Python (v3.10+) installed.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
----
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### Step 1: Run the Backend (FastAPI)
-1. Open a terminal and navigate to the `backend/` directory.
-2. Run the startup script:
-   ```cmd
-   run.bat
-   ```
-   *Alternatively, run:*
-   ```bash
-   python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-   ```
-3. The server will start on `http://127.0.0.1:8000`. You can test it by opening `http://127.0.0.1:8000/api/health` in your browser.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-> **Optional AI Features:**
-> To unlock natural language dataset summaries and chatbot answers, set your Google Gemini API Key in the environment:
-> ```cmd
-> set GEMINI_API_KEY=your-gemini-api-key
-> ```
-> If no API key is set, the application automatically falls back to statistical-rule summaries and standard helper chatbot patterns so the app remains fully functional.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
----
+## Learn More
 
-### Step 2: Run the Frontend (Next.js)
-1. Open another terminal and navigate to the `frontend/` directory.
-2. Run the startup script:
-   ```cmd
-   run.bat
-   ```
-   *Alternatively, run:*
-   ```bash
-   npm run dev
-   ```
-3. The Next.js dashboard will start on `http://localhost:3000`.
+To learn more about Next.js, take a look at the following resources:
 
----
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## Features Walkthrough
-1. **Landing & Ingestion:** Drag and drop any Excel (.xlsx, .xls) or CSV file.
-2. **Visual ETL Pipeline:** Click the trigger button and watch the pipeline Extract, Transform, Validate, and Load data with a live-scrolling terminal log.
-3. **AI Cleaning Reviews:** Inspect discovered duplicates, null inputs, outlier values, or capitalization issues. Choose recommended fixes and apply them. Revert at any point with version control.
-4. **Statistical Dashboard:** View automatically generated summaries (Total Rows, columns counts, duplicate rates, quality scores) and ECharts visualization widgets. Modify interactive filter controls to update charts instantly.
-5. **Predictive Forecasting:** Fit predictive regression models on numerical variables with visual 95% confidence bounds.
-6. **Data Chatbot:** Ask conversational questions directly about outliers, averages, summaries, or anomalies.
-7. **Polished Exporters:** Download cleaned datasets back to CSV, Excel, or print styled summary PDF reports.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
