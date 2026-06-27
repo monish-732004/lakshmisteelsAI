@@ -1,8 +1,6 @@
 import math
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
 
 def clean_value(val):
     if pd.isna(val) or (isinstance(val, float) and math.isnan(val)):
@@ -147,32 +145,29 @@ def forecast_target(df: pd.DataFrame, target_col: str, date_col: str = None, per
             "value": clean_value(row[target_col])
         })
 
-    # Prepare features for fitting (X = time index)
-    X = np.array(range(n_points)).reshape(-1, 1)
+    # Fit quadratic model to capture trends and slight curves using numpy
+    degree = min(2, max(1, n_points - 2))
+    X = np.arange(n_points)
     y = ts_df[target_col].values
-
-    # Fit quadratic model to capture trends and slight curves
-    poly = PolynomialFeatures(degree=min(2, max(1, n_points - 2)))
-    X_poly = poly.fit_transform(X)
     
-    model = LinearRegression()
-    model.fit(X_poly, y)
+    coeffs = np.polyfit(X, y, degree)
     
     # Calculate R2 & Mean Absolute Error (MAE) on training data
-    y_pred = model.predict(X_poly)
+    y_pred = np.polyval(coeffs, X)
     residuals = y - y_pred
     mae = float(np.mean(np.abs(residuals)))
     std_residuals = float(np.std(residuals))
     if std_residuals == 0:
         std_residuals = float(y.mean() * 0.05) if y.mean() != 0 else 1.0
         
-    r2 = float(model.score(X_poly, y))
+    ss_res = np.sum(residuals**2)
+    ss_tot = np.sum((y - np.mean(y))**2)
+    r2 = 1 - (ss_res / ss_tot) if ss_tot != 0 else 0.0
 
     # Forecast future points
     forecast_data = []
-    future_X = np.array(range(n_points, n_points + periods)).reshape(-1, 1)
-    future_X_poly = poly.transform(future_X)
-    future_preds = model.predict(future_X_poly)
+    future_X = np.arange(n_points, n_points + periods)
+    future_preds = np.polyval(coeffs, future_X)
 
     # Compute trend metrics
     growth_rate_pct = 0.0
@@ -201,7 +196,8 @@ def forecast_target(df: pd.DataFrame, target_col: str, date_col: str = None, per
         })
 
     # Overall trend evaluation
-    trend_slope = float(model.coef_[1]) if len(model.coef_) > 1 else float(model.coef_[0])
+    # coeffs are ordered [highest_degree, ..., linear, constant]
+    trend_slope = float(coeffs[-2]) if len(coeffs) >= 2 else 0.0
     trend_desc = "Increasing" if trend_slope > 0 else "Decreasing" if trend_slope < 0 else "Flat"
 
     return {
