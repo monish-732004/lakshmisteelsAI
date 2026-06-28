@@ -22,9 +22,19 @@ from app.services.reports import generate_pdf_report, generate_excel_export
 app = FastAPI(title=settings.PROJECT_NAME)
 
 # CORS middleware for Next.js frontend calls
+allowed_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://lakshmisteels-ai-qb7v.vercel.app",
+    "https://lakshmisteels-ai-qb7v.vercel.app/"
+]
+env_origins = os.getenv("ALLOWED_ORIGINS")
+if env_origins:
+    allowed_origins.extend([o.strip() for o in env_origins.split(",") if o.strip()])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -44,7 +44,11 @@ export default function Dropzone({ onUploadStart, onUploadSuccess, onUploadError
       const res = await api.uploadFile(file);
       onUploadSuccess(res);
     } catch (err: any) {
-      onUploadError(err.response?.data?.detail || "Failed to upload file. Make sure file format and size are correct.");
+      if (err.message === "Network Error") {
+        onUploadError("Network Error: Could not connect to the backend server. Please check if the API is running and CORS allows the request.");
+      } else {
+        onUploadError(err.response?.data?.detail || "Failed to upload file. Make sure file format and size are correct.");
+      }
     }
   };
 

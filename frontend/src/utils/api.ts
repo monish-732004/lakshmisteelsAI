@@ -1,6 +1,10 @@
 import axios from "axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://lakshmisteels-ai-wsry.vercel.app/api";
+export const API_BASE_URL = typeof window !== "undefined"
+  ? (window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
+    ? "http://127.0.0.1:8000/api"
+    : "/api")
+  : (process.env.NEXT_PUBLIC_API_URL || "https://lakshmisteels-ai-wsry.vercel.app/api");
 
 export const api = {
   // Get health status
@@ -13,9 +17,7 @@ export const api = {
   uploadFile: async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await axios.post(`${API_BASE_URL}/upload`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const res = await axios.post(`${API_BASE_URL}/upload`, formData);
     return res.data;
   },
 

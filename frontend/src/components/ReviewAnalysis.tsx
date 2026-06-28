@@ -63,7 +63,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
         </div>
         <div className="flex flex-wrap gap-2">
           <a
-            href={`http://127.0.0.1:8000/api/export/${fileId}/excel?version_num=0`}
+            href={`${api.getExportUrl(fileId, "excel")}?version_num=0`}
             download
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-card-border/60 hover:bg-slate-500/5 text-xs text-muted hover:text-foreground transition cursor-pointer"
           >
@@ -71,7 +71,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
             <span>Original Excel</span>
           </a>
           <a
-            href={`http://127.0.0.1:8000/api/export/${fileId}/excel?version_num=1`}
+            href={`${api.getExportUrl(fileId, "excel")}?version_num=1`}
             download
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-semibold shadow-md shadow-primary/10 transition cursor-pointer"
           >
@@ -79,7 +79,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
             <span>Cleaned Excel</span>
           </a>
           <a
-            href={`http://127.0.0.1:8000/api/export/${fileId}/csv?version_num=1`}
+            href={`${api.getExportUrl(fileId, "csv")}?version_num=1`}
             download
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary text-xs font-semibold transition cursor-pointer"
           >
@@ -87,7 +87,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
             <span>Cleaned CSV</span>
           </a>
           <a
-            href={`http://127.0.0.1:8000/api/export/${fileId}/pdf`}
+            href={api.getExportUrl(fileId, "pdf")}
             download
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-danger/25 text-danger bg-danger/5 hover:bg-danger/10 text-xs font-semibold transition cursor-pointer"
           >
