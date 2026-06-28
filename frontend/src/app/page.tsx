@@ -612,76 +612,122 @@ export default function Home() {
 
   </div>
 </footer>
-      {/* Browser translation request prompt popup modal */}
-      <AnimatePresence>
-        {showTranslatePrompt && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowTranslatePrompt(false)}
-              className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
-            />
+      {/* Browser Translation Prompt */}
+<AnimatePresence>
+  {showTranslatePrompt && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
 
-            {/* Modal Card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl z-10 space-y-6"
-            >
-              {/* Amber highlight glow */}
-              <div className="absolute -top-24 -left-24 h-48 w-48 bg-yellow-500/10 rounded-full blur-2xl pointer-events-none" />
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        onClick={() => setShowTranslatePrompt(false)}
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+      />
 
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center p-0 overflow-hidden shadow-md">
-                  <img src="/vercel.svg" alt="Logo" className="w-full h-full object-cover rounded-xl" />
-                </div>
-                <div>
-                  <h3 className="font-extrabold text-sm text-yellow-400 leading-tight">Language / மொழியைத் தேர்ந்தெடுக்கவும்</h3>
-                  <span className="text-[10px] text-zinc-400 font-semibold block leading-none mt-1">Translate Interface</span>
-                </div>
-              </div>
+      {/* Modal */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94, y: 25 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 20 }}
+        transition={{
+          duration: 0.3,
+          ease: "easeOut",
+        }}
+        className="relative z-10 w-full max-w-lg overflow-hidden rounded-3xl border border-zinc-800 bg-[#0b0b0c] shadow-[0_30px_80px_rgba(0,0,0,0.65)]"
+      >
 
-              <div className="space-y-2 text-zinc-300 text-xs leading-relaxed">
-                <p>
-                  We detected your browser language is English. Would you like to switch the interface to English?
-                </p>
-                <p className="text-zinc-400 font-semibold">
-                  உங்கள் உலாவி மொழி ஆங்கிலமாக உள்ளதை நாங்கள் கவனிக்கிறோம். லக்ஷ்மி ஸ்டீல்ஸ் இணையதளத்தை ஆங்கிலத்திற்கு மாற்ற விரும்புகிறீர்களா?
-                </p>
-              </div>
+        {/* Decorative glow */}
+        <div className="absolute -left-24 -top-24 h-56 w-56 rounded-full bg-yellow-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -right-20 -bottom-20 h-48 w-48 rounded-full bg-yellow-400/5 blur-3xl pointer-events-none" />
 
-              <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLanguage("en");
-                    localStorage.setItem("lang-prompt-decided", "en");
-                    setShowTranslatePrompt(false);
-                  }}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-yellow-500 hover:bg-yellow-400 text-black font-extrabold text-xs shadow-md transition duration-150 cursor-pointer text-center"
-                >
-                  English / Switch to English
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLanguage("ta");
-                    localStorage.setItem("lang-prompt-decided", "ta");
-                    setShowTranslatePrompt(false);
-                  }}
-                  className="flex-1 py-2.5 px-4 rounded-xl border border-zinc-800 hover:bg-zinc-900 text-zinc-300 font-bold text-xs transition duration-150 cursor-pointer text-center"
-                >
-                  தமிழ் / Keep Tamil
-                </button>
-              </div>
-            </motion.div>
+        <div className="relative p-8">
+
+          {/* Header */}
+          <div className="flex items-center gap-4">
+
+            <div className="h-14 w-14 overflow-hidden rounded-2xl border border-yellow-500/20 bg-zinc-900 shadow-lg">
+              <img
+                src="/vercel.svg"
+                alt="Lakshmi Steels"
+                className="h-full w-full object-cover"
+              />
+            </div>
+
+            <div>
+              <h3 className="text-xl font-bold text-yellow-400">
+                Choose Your Language
+              </h3>
+
+              <p className="mt-1 text-sm text-zinc-400">
+                மொழியைத் தேர்ந்தெடுக்கவும்
+              </p>
+            </div>
+
           </div>
-        )}
-      </AnimatePresence>
+
+          {/* Body */}
+          <div className="mt-8 space-y-5">
+
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
+
+              <p className="text-sm leading-7 text-zinc-200">
+                We detected that your browser language is
+                <span className="font-semibold text-yellow-400">
+                  {" "}English
+                </span>.
+                Would you like to switch the interface to English?
+              </p>
+
+              <div className="my-5 border-t border-zinc-800" />
+
+              <p className="text-sm leading-7 text-zinc-400">
+                உங்கள் உலாவி மொழி ஆங்கிலமாக இருப்பதை கண்டறிந்தோம்.
+                இந்த பயன்பாட்டை ஆங்கிலத்திற்கு மாற்ற விரும்புகிறீர்களா?
+              </p>
+
+            </div>
+
+          </div>
+
+          {/* Buttons */}
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+
+            <button
+              type="button"
+              onClick={() => {
+                setLanguage("en");
+                localStorage.setItem("lang-prompt-decided", "en");
+                setShowTranslatePrompt(false);
+              }}
+              className="group flex-1 rounded-2xl bg-linear-to-r from-yellow-500 to-amber-400 px-5 py-3.5 text-sm font-bold text-black shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_15px_40px_rgba(234,179,8,.35)] active:scale-[0.98]"
+            >
+              Switch to English
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setLanguage("ta");
+                localStorage.setItem("lang-prompt-decided", "ta");
+                setShowTranslatePrompt(false);
+              }}
+              className="flex-1 rounded-2xl border border-zinc-700 bg-zinc-900 px-5 py-3.5 text-sm font-semibold text-zinc-300 transition-all duration-300 hover:border-zinc-600 hover:bg-zinc-800 hover:text-white active:scale-[0.98]"
+            >
+              தமிழ் தொடரவும்
+            </button>
+
+          </div>
+
+        </div>
+
+      </motion.div>
+
+    </div>
+  )}
+</AnimatePresence>
     </div>
   );
 }
