@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { UploadCloud, FileSpreadsheet, History, Database, ArrowRight } from "lucide-react";
 import { api } from "../utils/api";
+import { useTranslation } from "../utils/LanguageContext";
 
 interface DropzoneProps {
   onUploadStart: () => void;
@@ -11,6 +12,7 @@ interface DropzoneProps {
 }
 
 export default function Dropzone({ onUploadStart, onUploadSuccess, onUploadError }: DropzoneProps) {
+  const { t } = useTranslation();
   const [isDragActive, setIsDragActive] = useState(false);
   const [recentFiles, setRecentFiles] = useState<any[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -121,14 +123,14 @@ export default function Dropzone({ onUploadStart, onUploadSuccess, onUploadError
             <UploadCloud className="h-10 w-10" />
           </div>
           <div className="space-y-2">
-            <h3 className="text-2xl font-bold">Upload your raw dataset</h3>
+            <h3 className="text-2xl font-bold">{t("landing.uploadHeader")}</h3>
             <p className="text-muted max-w-md mx-auto text-sm leading-relaxed">
-              Drag & drop your Excel (.xlsx, .xls) or CSV files here, or click to browse files from your computer.
+              {t("landing.uploadSub")}
             </p>
           </div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/5 text-xs text-primary font-medium">
             <Database className="h-3.5 w-3.5" />
-            Up to 50MB files supported
+            {t("landing.uploadLimit")}
           </div>
         </div>
       </div>
@@ -138,7 +140,7 @@ export default function Dropzone({ onUploadStart, onUploadSuccess, onUploadError
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-muted font-medium text-sm">
             <History className="h-4 w-4" />
-            <span>Load a recently analyzed dataset</span>
+            <span>{t("landing.recentHeader")}</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {recentFiles.slice(0, 4).map((f) => (

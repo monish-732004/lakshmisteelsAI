@@ -251,11 +251,8 @@ def generate_excel_export(df: pd.DataFrame, output_path: str):
         
     # Auto-fit column widths
     for i, col in enumerate(df.columns):
-        series = df[col]
-        max_len = max((
-            series.astype(str).map(len).max(),
-            len(str(col))
-        )) + 3 # padding
-        worksheet.set_column(i, i, min(50, max_len))
+      series = df[col]
+      max_len = max([len(str(val)) for val in series.dropna()] + [len(str(col))]) + 3
+      worksheet.set_column(i, i, min(50, max_len))
         
     writer.close()

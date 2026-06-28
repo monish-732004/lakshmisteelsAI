@@ -869,10 +869,10 @@ def get_analysis_details(file_id: str, db: Session = Depends(get_session)):
         aov = revenue / orders if orders > 0 else 0.0
         
         kpis = {
-            "Total Revenue": f"${revenue:,.2f}",
-            "Total Profit": f"${profit:,.2f}",
+            "Total Revenue": f"₹{revenue:,.2f}",
+            "Total Profit": f"₹{profit:,.2f}",
             "Total Orders": f"{orders:,}",
-            "Average Order Value": f"${aov:,.2f}",
+            "Average Order Value": f"₹{aov:,.2f}",
             "Customer Growth Rate": "8.4%"
         }
     elif domain == "Finance":
@@ -884,9 +884,9 @@ def get_analysis_details(file_id: str, db: Session = Depends(get_session)):
         variance = budget - expenses
         
         kpis = {
-            "Total Expenses": f"${expenses:,.2f}",
-            "Budget Allocation": f"${budget:,.2f}",
-            "Budget Variance": f"${variance:,.2f}",
+            "Total Expenses": f"₹{expenses:,.2f}",
+            "Budget Allocation": f"₹{budget:,.2f}",
+            "Budget Variance": f"₹{variance:,.2f}",
             "Cash Flow Velocity": "Steady",
             "ROI Yield": "12.6%"
         }
@@ -897,7 +897,7 @@ def get_analysis_details(file_id: str, db: Session = Depends(get_session)):
         
         kpis = {
             "Employee Headcount": f"{employees:,}",
-            "Average Salary": f"${avg_salary:,.2f}",
+            "Average Salary": f"₹{avg_salary:,.2f}",
             "Attrition Rate": "6.2%",
             "Department Distribution": f"{len(df.iloc[:, 2].unique()) if len(df.columns) > 2 else 4} units",
             "Performance Index": "84.2/100"

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { BarChart3, PieChart, Activity, SlidersHorizontal, ArrowUpRight, DollarSign, Percent, TrendingUp, Hash, Info, FileSpreadsheet } from "lucide-react";
+import { BarChart3, PieChart, Activity, SlidersHorizontal, ArrowUpRight, IndianRupee, Percent, TrendingUp, Hash, Info, FileSpreadsheet } from "lucide-react";
 import ReactECharts from "echarts-for-react";
+import { useTranslation } from "../utils/LanguageContext";
 
 interface DashboardGridProps {
   profile: any; // Raw profile stats from backend
@@ -10,6 +11,7 @@ interface DashboardGridProps {
 }
 
 export default function DashboardGrid({ profile, previewData }: DashboardGridProps) {
+  const { t } = useTranslation();
   const [filteredData, setFilteredData] = useState<any[]>([]);
   
   // Filter variables
@@ -76,11 +78,11 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
     const kpisList = [];
     
     kpisList.push({
-      label: "Analyzed Records",
+      label: t("dash.kpi.records"),
       value: profile?.total_rows?.toLocaleString() || "0",
       icon: <Hash className="h-5 w-5" />,
       color: "text-primary border-primary/20 bg-primary/5",
-      subText: "Row instances normalized"
+      subText: t("dash.kpi.records.sub")
     });
 
     const columnsNames = profile?.columns?.map((c: any) => c.name.toLowerCase()) || [];
@@ -91,22 +93,22 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
       const colName = profile.columns[revenueIdx].name;
       const totalRev = filteredData.reduce((acc, curr) => acc + (Number(curr[colName]) || 0), 0);
       kpisList.push({
-        label: `Total ${colName}`,
-        value: `$${totalRev.toLocaleString(undefined, { maximumFractionDigits: 2 })}`,
-        icon: <DollarSign className="h-5 w-5" />,
+        label: t("dash.kpi.total", { col: colName }),
+        value: `₹${totalRev.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`,
+        icon: <IndianRupee className="h-5 w-5" />,
         color: "text-emerald-500 border-emerald-500/20 bg-emerald-500/5",
-        subText: "Filtered summation score"
+        subText: t("dash.kpi.total.sub")
       });
     } else {
       const numericCol = profile?.columns?.find((c: any) => c.type === "numeric");
       if (numericCol) {
         const totalSum = filteredData.reduce((acc, curr) => acc + (Number(curr[numericCol.name]) || 0), 0);
         kpisList.push({
-          label: `Sum of ${numericCol.name}`,
+          label: t("dash.kpi.sum", { col: numericCol.name }),
           value: totalSum.toLocaleString(undefined, { maximumFractionDigits: 2 }),
           icon: <Activity className="h-5 w-5" />,
           color: "text-emerald-500 border-emerald-500/20 bg-emerald-500/5",
-          subText: "Active aggregated sum"
+          subText: t("dash.kpi.sum.sub")
         });
       }
     }
@@ -115,42 +117,50 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
       const colName = profile.columns[profitIdx].name;
       const totalProfit = filteredData.reduce((acc, curr) => acc + (Number(curr[colName]) || 0), 0);
       kpisList.push({
-        label: `Total ${colName}`,
-        value: `$${totalProfit.toLocaleString(undefined, { maximumFractionDigits: 2 })}`,
+        label: t("dash.kpi.total", { col: colName }),
+        value: `₹${totalProfit.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`,
         icon: <TrendingUp className="h-5 w-5" />,
         color: "text-indigo-500 border-indigo-500/20 bg-indigo-500/5",
-        subText: "Operating index value"
+        subText: t("dash.kpi.total.sub")
       });
     } else {
       kpisList.push({
-        label: "Statistical Outliers",
+        label: t("dash.kpi.outliers"),
         value: profile?.total_outliers?.toString() || "0",
         icon: <Percent className="h-5 w-5" />,
         color: "text-rose-500 border-rose-500/20 bg-rose-500/5",
-        subText: "Out-of-boundary anomalies"
+        subText: t("dash.kpi.outliers.sub")
       });
     }
 
     kpisList.push({
-      label: "Analysis Quality Rating",
+      label: t("dash.kpi.quality"),
       value: `${profile?.data_quality_score || 100}%`,
       icon: <ArrowUpRight className="h-5 w-5" />,
       color: "text-amber-500 border-amber-500/20 bg-amber-500/5",
-      subText: "Data integrity score"
+      subText: t("dash.kpi.quality.sub")
     });
 
     return kpisList;
   };
 
   // ECharts Options with Interactive Toolboxes (Zoom, Download, Magic type lines)
+  const findBestColumn = (cols: string[], keywords: string[]) => {
+    for (const keyword of keywords) {
+      const found = cols.find(c => c.toLowerCase().includes(keyword));
+      if (found) return found;
+    }
+    return cols.length > 0 ? cols[0] : null;
+  };
+
   const getBarChartOption = () => {
-    const catCols = profile?.columns?.filter((c: any) => c.type === "categorical").map((c: any) => c.name) || [];
-    const numCols = profile?.columns?.filter((c: any) => c.type === "numeric").map((c: any) => c.name) || [];
+    const catCols = profile?.columns?.filter((c: any) => c.type === "categorical").map((c: any) => c.name as string) || [];
+    const numCols = profile?.columns?.filter((c: any) => c.type === "numeric").map((c: any) => c.name as string) || [];
     
     if (catCols.length === 0 || numCols.length === 0 || filteredData.length === 0) return {};
 
-    const catCol = catCols[0];
-    const numCol = numCols[0];
+    const catCol: string = findBestColumn(catCols, ["product", "item", "category", "brand", "customer", "client"]) || catCols[0] || "Unknown";
+    const numCol: string = findBestColumn(numCols, ["revenue", "sales", "amount", "total", "profit", "qty", "quantity"]) || numCols[0] || "Unknown";
 
     const grouped: { [key: string]: number } = {};
     filteredData.forEach(r => {
@@ -198,10 +208,14 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
   };
 
   const getDoughnutChartOption = () => {
-    const catCols = profile?.columns?.filter((c: any) => c.type === "categorical").map((c: any) => c.name) || [];
+    const catCols = profile?.columns?.filter((c: any) => c.type === "categorical").map((c: any) => c.name as string) || [];
     if (catCols.length === 0 || filteredData.length === 0) return {};
 
-    const catCol = catCols[0];
+    // For the doughnut, try to pick a different category if possible, like Region, Customer, or Segment
+    const primaryCatCol: string = findBestColumn(catCols, ["product", "item", "category", "brand", "customer", "client"]) || catCols[0] || "Unknown";
+    let catCol: string = findBestColumn(catCols.filter((c: string) => c !== primaryCatCol), ["category", "region", "city", "status", "type", "customer", "segment"]) || "";
+    if (!catCol) catCol = primaryCatCol; // Fallback
+
     const counts: { [key: string]: number } = {};
     filteredData.forEach(r => {
       const val = String(r[catCol] || "Unknown");
@@ -220,16 +234,19 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
         iconStyle: { borderColor: "gray" }
       },
       legend: {
-        orient: "horizontal",
-        bottom: "0%",
+        type: "scroll",
+        orient: "vertical",
+        right: 10,
+        top: 20,
+        bottom: 20,
         textStyle: { color: "var(--foreground)", fontSize: 10 }
       },
       series: [
         {
-          name: "Distribution",
+          name: t("dash.chart.distribution"),
           type: "pie",
           radius: ["35%", "65%"],
-          center: ["50%", "45%"],
+          center: ["35%", "50%"],
           avoidLabelOverlap: true,
           itemStyle: {
             borderRadius: 6,
@@ -307,8 +324,13 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
   const kpis = getKpis();
 
   // Dynamic Insight Explanations
-  const catCol = profile?.columns?.find((c: any) => c.type === "categorical")?.name || "Group";
-  const numCol = profile?.columns?.find((c: any) => c.type === "numeric")?.name || "Metric";
+  const allCatCols = profile?.columns?.filter((c: any) => c.type === "categorical").map((c: any) => c.name as string) || [];
+  const allNumCols = profile?.columns?.filter((c: any) => c.type === "numeric").map((c: any) => c.name as string) || [];
+  const catCol: string = findBestColumn(allCatCols, ["product", "item", "category", "brand", "customer", "client"]) || allCatCols[0] || "Group";
+  const numCol: string = findBestColumn(allNumCols, ["revenue", "sales", "amount", "total", "profit", "qty", "quantity"]) || allNumCols[0] || "Metric";
+  
+  let doughnutCatCol: string = findBestColumn(allCatCols.filter((c: string) => c !== catCol), ["category", "region", "city", "status", "type", "customer", "segment"]) || "";
+  if (!doughnutCatCol) doughnutCatCol = catCol;
 
   return (
     <div className="space-y-6">
@@ -316,19 +338,19 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
       <div className="glass-card p-5 space-y-4">
         <div className="flex items-center gap-2 text-xs font-bold text-muted uppercase">
           <SlidersHorizontal className="h-4 w-4 text-primary" />
-          <span>Interactive BI Dashboard Filter Panel</span>
+          <span>{t("dash.filters")}</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {categories.length > 0 && (
             <div className="space-y-1.5">
-              <span className="text-xs font-bold text-muted block">Filter Category ({catCol})</span>
+              <span className="text-xs font-bold text-muted block">{t("dash.filter.cat", { col: catCol })}</span>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="w-full glass-input px-3 py-2 text-xs text-foreground cursor-pointer"
               >
-                <option value="All">All Categories</option>
+                <option value="All">{t("dash.filter.all")}</option>
                 {categories.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -341,7 +363,7 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
           {numericCols.length > 0 && (
             <>
               <div className="space-y-1.5">
-                <span className="text-xs font-bold text-muted block">Active Numeric Filter</span>
+                <span className="text-xs font-bold text-muted block">{t("dash.filter.num", { col: "" })}</span>
                 <select
                   value={selectedNumCol}
                   onChange={(e) => {
@@ -363,7 +385,7 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
               </div>
 
               <div className="space-y-1.5">
-                <span className="text-xs font-bold text-muted block">Minimum Threshold Constraint</span>
+                <span className="text-xs font-bold text-muted block">{t("dash.filter.threshold")}</span>
                 <input
                   type="number"
                   value={numMin}
@@ -404,10 +426,10 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
             <div className="space-y-1 mb-4">
               <div className="flex items-center gap-2">
                 <BarChart3 className="h-4.5 w-4.5 text-primary animate-pulse" />
-                <h4 className="font-bold text-sm text-foreground">Aggregate comparison by {catCol}</h4>
+                <h4 className="font-bold text-sm text-foreground">{t("dash.chart.comparison")} ({catCol})</h4>
               </div>
               <p className="text-[11px] text-muted leading-relaxed">
-                Aggregated sum totals of {numCol} compared across categorical classifications.
+                {t("dash.chart.comparison.desc", { col1: numCol, col2: catCol })}
               </p>
             </div>
             <div className="flex-1 w-full h-64">
@@ -416,9 +438,9 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
             <div className="mt-4 pt-3 border-t border-card-border/20 flex items-start gap-2 bg-slate-500/5 p-3 rounded-xl">
               <Info className="h-4.5 w-4.5 text-primary shrink-0 mt-0.5" />
               <div className="space-y-0.5">
-                <span className="text-[10px] font-bold text-foreground uppercase block">Analytical Insight</span>
+                <span className="text-[10px] font-bold text-foreground uppercase block">{t("dash.insight.title")}</span>
                 <span className="text-[11px] text-muted leading-relaxed">
-                  Data indicates primary weight is concentrated in specific categories. Leverage these segments as primary indicators.
+                  {t("dash.insight.desc1")}
                 </span>
               </div>
             </div>
@@ -431,10 +453,10 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
             <div className="space-y-1 mb-4">
               <div className="flex items-center gap-2">
                 <PieChart className="h-4.5 w-4.5 text-accent" />
-                <h4 className="font-bold text-sm text-foreground">Category Share Distribution</h4>
+                <h4 className="font-bold text-sm text-foreground">{t("dash.chart.distribution")}</h4>
               </div>
               <p className="text-[11px] text-muted leading-relaxed">
-                Distribution breakdown of rows populated in each '{catCol}' category segment.
+                {t("dash.chart.distribution.desc", { col: doughnutCatCol })}
               </p>
             </div>
             <div className="flex-1 w-full h-64">
@@ -443,9 +465,9 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
             <div className="mt-4 pt-3 border-t border-card-border/20 flex items-start gap-2 bg-slate-500/5 p-3 rounded-xl">
               <Info className="h-4.5 w-4.5 text-accent shrink-0 mt-0.5" />
               <div className="space-y-0.5">
-                <span className="text-[10px] font-bold text-foreground uppercase block">Analytical Insight</span>
+                <span className="text-[10px] font-bold text-foreground uppercase block">{t("dash.insight.title")}</span>
                 <span className="text-[11px] text-muted leading-relaxed">
-                  Share analysis highlights density parameters. Buckets with high percentages require primary focus check.
+                  {t("dash.insight.desc2")}
                 </span>
               </div>
             </div>
@@ -458,10 +480,10 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
             <div className="space-y-1 mb-4">
               <div className="flex items-center gap-2">
                 <Activity className="h-4.5 w-4.5 text-amber-500" />
-                <h4 className="font-bold text-sm text-foreground">Statistical Correlation Matrix</h4>
+                <h4 className="font-bold text-sm text-foreground">{t("dash.chart.correlation")}</h4>
               </div>
               <p className="text-[11px] text-muted leading-relaxed">
-                Heatmap detailing linear dependence between multiple numerical attributes. Positive scores show directional co-movement.
+                {t("dash.chart.correlation.desc")}
               </p>
             </div>
             <div className="flex-1 w-full h-72">
@@ -470,9 +492,9 @@ export default function DashboardGrid({ profile, previewData }: DashboardGridPro
             <div className="mt-4 pt-3 border-t border-card-border/20 flex items-start gap-2 bg-slate-500/5 p-3 rounded-xl">
               <Info className="h-4.5 w-4.5 text-amber-500 shrink-0 mt-0.5" />
               <div className="space-y-0.5">
-                <span className="text-[10px] font-bold text-foreground uppercase block">Correlation Matrix Insight</span>
+                <span className="text-[10px] font-bold text-foreground uppercase block">{t("dash.insight.title")}</span>
                 <span className="text-[11px] text-muted leading-relaxed">
-                  Highly positive (purple-blue) indices highlight direct correlations. Negative (red) indices highlight inverse relationships.
+                  {t("dash.insight.desc3")}
                 </span>
               </div>
             </div>

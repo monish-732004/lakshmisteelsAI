@@ -81,17 +81,31 @@
 }
 
 /* Custom Base resets */
-body {
+html {
   background-color: var(--background);
-  background-image: url('/store-background.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+}
+
+body {
+  background-color: transparent;
   color: var(--foreground);
   font-family: 'Outfit', sans-serif, system-ui;
   transition: background-color 0.3s ease, color 0.3s ease;
   overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/store-background.jpg');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+  z-index: -1;
 }
 
 /* Custom design classes */
@@ -116,7 +130,7 @@ body {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(231, 189, 189, 0.08);
 }
 
 /* Scrollbar customization */

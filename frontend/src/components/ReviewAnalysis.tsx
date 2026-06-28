@@ -3,12 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { Sparkles, HelpCircle, Download, CheckCircle, AlertTriangle, Info, TrendingUp, Cpu, Database, Award, ShieldAlert, BarChart3, ChevronDown, ChevronUp } from "lucide-react";
 import { api } from "../utils/api";
+import { useTranslation } from "../utils/LanguageContext";
 
 interface ReviewAnalysisProps {
   fileId: string;
 }
 
 export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
+  const { t } = useTranslation();
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [expandedStats, setExpandedStats] = useState<Record<string, boolean>>({});
@@ -37,7 +39,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
     return (
       <div className="py-20 text-center flex flex-col items-center justify-center space-y-4">
         <Cpu className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm font-semibold text-muted">AI Analyst is digesting data metrics...</p>
+        <p className="text-sm font-semibold text-muted">{t("loader.compiling")}</p>
       </div>
     );
   }
@@ -58,8 +60,8 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
       {/* Top Banner Exporters */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 glass-card mb-4">
         <div>
-          <h2 className="text-xl font-bold text-foreground">Review Analysis Workspace</h2>
-          <p className="text-xs font-semibold text-foreground/80 mt-1">Comprehensive statistical & intelligence report prepared automatically</p>
+          <h2 className="text-xl font-bold text-foreground">{t("review.title")}</h2>
+          <p className="text-xs font-semibold text-foreground/80 mt-1">{t("review.subtitle")}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <a
@@ -68,7 +70,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-card-border/60 hover:bg-slate-500/5 text-xs text-muted hover:text-foreground transition cursor-pointer"
           >
             <Download className="h-3.5 w-3.5" />
-            <span>Original Excel</span>
+            <span>{t("review.btn.origExcel")}</span>
           </a>
           <a
             href={`${api.getExportUrl(fileId, "excel")}?version_num=1`}
@@ -76,7 +78,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-semibold shadow-md shadow-primary/10 transition cursor-pointer"
           >
             <Download className="h-3.5 w-3.5" />
-            <span>Cleaned Excel</span>
+            <span>{t("review.btn.cleanExcel")}</span>
           </a>
           <a
             href={`${api.getExportUrl(fileId, "csv")}?version_num=1`}
@@ -84,7 +86,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary text-xs font-semibold transition cursor-pointer"
           >
             <Download className="h-3.5 w-3.5" />
-            <span>Cleaned CSV</span>
+            <span>{t("review.btn.cleanCsv")}</span>
           </a>
           <a
             href={api.getExportUrl(fileId, "pdf")}
@@ -92,7 +94,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-danger/25 text-danger bg-danger/5 hover:bg-danger/10 text-xs font-semibold transition cursor-pointer"
           >
             <Download className="h-3.5 w-3.5" />
-            <span>PDF Report</span>
+            <span>{t("review.btn.pdf")}</span>
           </a>
         </div>
       </div>
@@ -115,7 +117,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
         <div className="absolute -right-16 -top-16 h-36 w-36 bg-accent/5 rounded-full blur-2xl pointer-events-none" />
         <div className="flex items-center gap-2 text-accent font-bold text-sm uppercase tracking-wider mb-3">
           <Sparkles className="h-4.5 w-4.5 animate-pulse fill-current" />
-          <span>Executive Summary Report</span>
+          <span>{t("review.summaryTitle")}</span>
         </div>
         <div className="space-y-4">
           <p className="text-sm text-foreground leading-relaxed font-medium font-sans">
@@ -123,7 +125,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-card-border/30">
             <div className="space-y-2">
-              <span className="text-xs font-bold text-emerald-500 uppercase tracking-wider block">Top Opportunities & Insights</span>
+              <span className="text-xs font-bold text-emerald-500 uppercase tracking-wider block">{t("review.oppTitle")}</span>
               <ul className="text-xs text-muted space-y-1.5">
                 {executive_summary.opportunities.map((item: string, i: number) => (
                   <li key={i} className="flex items-start gap-1.5">
@@ -134,7 +136,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
               </ul>
             </div>
             <div className="space-y-2">
-              <span className="text-xs font-bold text-rose-500 uppercase tracking-wider block">Potential Risks & Attention Needed</span>
+              <span className="text-xs font-bold text-rose-500 uppercase tracking-wider block">{t("review.risksTitle")}</span>
               <ul className="text-xs text-muted space-y-1.5">
                 {executive_summary.risks.map((item: string, i: number) => (
                   <li key={i} className="flex items-start gap-1.5">
@@ -154,30 +156,30 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
         <div className="glass-card p-6 space-y-4">
           <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase">
             <Database className="h-4.5 w-4.5" />
-            <span>Dataset Overview</span>
+            <span>{t("review.indicatorTitle")}</span>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="p-3.5 rounded-xl bg-slate-500/5 border border-card-border/30">
-              <span className="text-[10px] text-muted block uppercase font-bold">Total Rows</span>
+              <span className="text-[10px] text-muted block uppercase font-bold">{t("review.indicator.rows")}</span>
               <span className="text-xl font-extrabold text-foreground">{overview.total_rows.toLocaleString()}</span>
             </div>
             <div className="p-3.5 rounded-xl bg-slate-500/5 border border-card-border/30">
-              <span className="text-[10px] text-muted block uppercase font-bold">Total Columns</span>
+              <span className="text-[10px] text-muted block uppercase font-bold">{t("review.indicator.cols")}</span>
               <span className="text-xl font-extrabold text-foreground">{overview.total_columns}</span>
             </div>
             <div className="p-3.5 rounded-xl bg-slate-500/5 border border-card-border/30">
-              <span className="text-[10px] text-muted block uppercase font-bold">Dataset Size</span>
+              <span className="text-[10px] text-muted block uppercase font-bold">{t("review.indicator.size")}</span>
               <span className="text-xl font-extrabold text-foreground">{overview.file_size_kb} KB</span>
             </div>
             <div className="p-3.5 rounded-xl bg-slate-500/5 border border-card-border/30">
-              <span className="text-[10px] text-muted block uppercase font-bold">Date Range</span>
+              <span className="text-[10px] text-muted block uppercase font-bold">{t("review.indicator.dateRange")}</span>
               <span className="text-xs font-bold text-foreground truncate block pt-1">
-                {overview.date_range || "N/A"}
+                {overview.date_range || t("review.indicator.noDate")}
               </span>
             </div>
           </div>
           <div className="space-y-1.5">
-            <span className="text-xs font-bold text-foreground">Column Schema Details</span>
+            <span className="text-xs font-bold text-foreground">{t("review.metricsTitle")}</span>
             <div className="max-h-36 overflow-y-auto border border-card-border/40 rounded-xl scrollbar-thin p-2 space-y-1 bg-card-bg/20">
               {Object.entries(overview.data_types).map(([colName, colType]: any) => (
                 <div key={colName} className="flex items-center justify-between text-xs py-1 px-2 hover:bg-slate-500/5 rounded">
@@ -202,7 +204,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-rose-500 font-bold text-sm uppercase">
                 <ShieldAlert className="h-4.5 w-4.5" />
-                <span>Data Quality Report</span>
+                <span>{t("review.qualityTitle")}</span>
               </div>
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-500/5 border border-card-border/40">
                 <span className="text-[10px] text-muted font-bold">SCORE</span>
@@ -227,15 +229,15 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
             {/* Anomaly issues breakdown */}
             <div className="grid grid-cols-3 gap-2">
               <div className="p-2 rounded bg-slate-500/5 text-center">
-                <span className="text-[9px] text-muted block uppercase">Outliers</span>
+                <span className="text-[9px] text-muted block uppercase">{t("review.quality.outliers")}</span>
                 <span className="text-sm font-bold text-foreground">{quality.issues.outliers}</span>
               </div>
               <div className="p-2 rounded bg-slate-500/5 text-center">
-                <span className="text-[9px] text-muted block uppercase">Missing Cells</span>
+                <span className="text-[9px] text-muted block uppercase">{t("review.quality.nulls")}</span>
                 <span className="text-sm font-bold text-foreground">{quality.issues.missing_values}</span>
               </div>
               <div className="p-2 rounded bg-slate-500/5 text-center">
-                <span className="text-[9px] text-muted block uppercase">Duplicates</span>
+                <span className="text-[9px] text-muted block uppercase">{t("review.quality.dups")}</span>
                 <span className="text-sm font-bold text-foreground">{quality.issues.duplicate_records}</span>
               </div>
             </div>
@@ -243,7 +245,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
 
           {/* Auto Cleaning Summary Checklist */}
           <div className="pt-3 border-t border-card-border/30 space-y-2">
-            <span className="text-xs font-bold text-foreground block">Automatic Cleaning Summary</span>
+            <span className="text-xs font-bold text-foreground block">{t("review.clean.autoTitle")}</span>
             <div className="space-y-1.5 max-h-36 overflow-y-auto scrollbar-thin">
               {quality.cleaning_summary.length > 0 ? (
                 quality.cleaning_summary.map((log: string, i: number) => (
@@ -255,7 +257,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
               ) : (
                 <div className="text-xs text-muted italic flex items-center gap-1.5">
                   <Info className="h-4 w-4" />
-                  <span>The raw dataset required no automatic adjustments.</span>
+                  <span>{t("review.clean.empty")}</span>
                 </div>
               )}
             </div>
@@ -267,23 +269,23 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
       <div className="glass-card p-6 space-y-4">
         <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase">
           <BarChart3 className="h-4.5 w-4.5" />
-          <span>Descriptive Statistical Analysis</span>
+          <span>{t("review.stats.descriptive")}</span>
         </div>
         <div className="overflow-x-auto border border-card-border/40 rounded-xl">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-slate-500/5 border-b border-card-border/50 text-muted">
-                <th className="p-3">Column Variable</th>
-                <th className="p-3 text-right">Mean</th>
-                <th className="p-3 text-right">Median</th>
-                <th className="p-3 text-right">Mode</th>
-                <th className="p-3 text-right">Variance</th>
-                <th className="p-3 text-right">Std Dev</th>
-                <th className="p-3 text-right">Min</th>
-                <th className="p-3 text-right">Max</th>
-                <th className="p-3 text-right">Skewness</th>
-                <th className="p-3 text-right">Kurtosis</th>
-                <th className="p-3 text-center">Percentiles</th>
+                <th className="p-3">{t("review.stats.colVar")}</th>
+                <th className="p-3 text-right">{t("review.stats.mean")}</th>
+                <th className="p-3 text-right">{t("review.stats.median")}</th>
+                <th className="p-3 text-right">{t("review.stats.mode")}</th>
+                <th className="p-3 text-right">{t("review.stats.variance")}</th>
+                <th className="p-3 text-right">{t("review.stats.stdDev")}</th>
+                <th className="p-3 text-right">{t("review.stats.min")}</th>
+                <th className="p-3 text-right">{t("review.stats.max")}</th>
+                <th className="p-3 text-right">{t("review.stats.skewness")}</th>
+                <th className="p-3 text-right">{t("review.stats.kurtosis")}</th>
+                <th className="p-3 text-center">{t("review.stats.percentiles")}</th>
               </tr>
             </thead>
             <tbody>
@@ -316,25 +318,25 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
                         <td colSpan={11} className="p-4 border-b border-card-border/30">
                           <div className="grid grid-cols-4 gap-4 text-center">
                             <div className="p-2.5 rounded bg-card-bg border border-card-border/50">
-                              <span className="text-[10px] text-muted uppercase block font-bold">25th Percentile</span>
+                              <span className="text-[10px] text-muted uppercase block font-bold">{t("review.stats.p25")}</span>
                               <span className="text-sm font-extrabold text-foreground">
                                 {colStat.percentiles["25%"]?.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                               </span>
                             </div>
                             <div className="p-2.5 rounded bg-card-bg border border-card-border/50">
-                              <span className="text-[10px] text-muted uppercase block font-bold">50th Percentile (IQR)</span>
+                              <span className="text-[10px] text-muted uppercase block font-bold">{t("review.stats.p50")}</span>
                               <span className="text-sm font-extrabold text-foreground">
                                 {colStat.percentiles["50%"]?.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                               </span>
                             </div>
                             <div className="p-2.5 rounded bg-card-bg border border-card-border/50">
-                              <span className="text-[10px] text-muted uppercase block font-bold">75th Percentile</span>
+                              <span className="text-[10px] text-muted uppercase block font-bold">{t("review.stats.p75")}</span>
                               <span className="text-sm font-extrabold text-foreground">
                                 {colStat.percentiles["75%"]?.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                               </span>
                             </div>
                             <div className="p-2.5 rounded bg-card-bg border border-card-border/50">
-                              <span className="text-[10px] text-muted uppercase block font-bold">90th Percentile</span>
+                              <span className="text-[10px] text-muted uppercase block font-bold">{t("review.stats.p90")}</span>
                               <span className="text-sm font-extrabold text-foreground">
                                 {colStat.percentiles["90%"]?.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                               </span>
@@ -349,7 +351,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
               {Object.keys(stats.columns).length === 0 && (
                 <tr>
                   <td colSpan={11} className="p-6 text-center text-muted italic">
-                    No numeric fields are present in this dataset to generate statistical descriptive matrices.
+                    {t("review.stats.empty")}
                   </td>
                 </tr>
               )}
@@ -365,7 +367,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
           <div className="glass-card p-6 space-y-4">
             <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase">
               <BarChart3 className="h-4.5 w-4.5" />
-              <span>Correlation Matrix Grid</span>
+              <span>{t("review.corr.title")}</span>
             </div>
             <div className="p-2 border border-card-border/30 rounded-xl overflow-x-auto">
               <div className="min-w-[320px] grid gap-1">
@@ -418,7 +420,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
           <div className="glass-card p-6 space-y-4">
             <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase">
               <Cpu className="h-4.5 w-4.5" />
-              <span>Feature Importance Rank</span>
+              <span>{t("review.feat.title")}</span>
             </div>
             <div className="space-y-4">
               {Object.keys(stats.feature_importance).length > 0 ? (
@@ -426,7 +428,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
                   <div key={featName} className="space-y-1.5">
                     <div className="flex justify-between text-xs">
                       <span className="font-semibold text-foreground">{featName}</span>
-                      <span className="text-muted font-bold">{(featWeight * 100).toFixed(1)}% weight</span>
+                      <span className="text-muted font-bold">{t("review.feat.weight", { weight: (featWeight * 100).toFixed(1) })}</span>
                     </div>
                     <div className="w-full bg-slate-500/10 h-2.5 rounded-full overflow-hidden">
                       <div
@@ -438,7 +440,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
                 ))
               ) : (
                 <div className="text-xs text-muted italic py-10 text-center">
-                  No statistical targets found to calculate relative feature correlation rankings.
+                  {t("review.feat.empty")}
                 </div>
               )}
             </div>
@@ -452,7 +454,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
           <div className="absolute top-0 right-0 h-10 w-10 bg-indigo-500/5 rounded-bl-full animate-pulse" />
           <div className="flex items-center gap-2 text-indigo-500 font-bold text-xs uppercase">
             <TrendingUp className="h-4.5 w-4.5" />
-            <span>Trend Outlook</span>
+            <span>{t("review.trend.title")}</span>
           </div>
           <p className="text-xs text-muted leading-relaxed">
             {trend_analysis.trend}
@@ -463,7 +465,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
           <div className="absolute top-0 right-0 h-10 w-10 bg-amber-500/5 rounded-bl-full" />
           <div className="flex items-center gap-2 text-amber-500 font-bold text-xs uppercase">
             <Sparkles className="h-4.5 w-4.5" />
-            <span>Seasonality Patterns</span>
+            <span>{t("review.season.title")}</span>
           </div>
           <p className="text-xs text-muted leading-relaxed">
             {trend_analysis.seasonality}
@@ -474,7 +476,7 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
           <div className="absolute top-0 right-0 h-10 w-10 bg-rose-500/5 rounded-bl-full" />
           <div className="flex items-center gap-2 text-rose-500 font-bold text-xs uppercase">
             <ShieldAlert className="h-4.5 w-4.5" />
-            <span>Anomaly Alerts</span>
+            <span>{t("review.anomaly.title")}</span>
           </div>
           <p className="text-xs text-muted leading-relaxed">
             {trend_analysis.anomaly}
@@ -487,12 +489,12 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
         <div className="glass-card p-6 space-y-4">
           <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase">
             <Award className="h-4.5 w-4.5" />
-            <span>Predictive Analytics (Future Forecast)</span>
+            <span>{t("review.predict.title")}</span>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
             <div className="lg:col-span-1 border border-card-border/30 rounded-xl p-4 bg-slate-500/5 h-44 flex flex-col justify-between">
               <div>
-                <span className="text-[10px] text-muted uppercase font-bold block">Target Variable</span>
+                <span className="text-[10px] text-muted uppercase font-bold block">{t("review.predict.target")}</span>
                 <span className="text-sm font-bold text-foreground truncate block">{predictions.metric}</span>
               </div>
               
@@ -523,8 +525,8 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
               </div>
 
               <div className="flex justify-between text-[9px] text-muted font-semibold pt-1 border-t border-card-border/20">
-                <span>Start Projection</span>
-                <span>Projected Growth: {predictions.growth_rate_pct?.toFixed(1)}%</span>
+                <span>{t("review.predict.start")}</span>
+                <span>{t("review.predict.growth", { growth: predictions.growth_rate_pct?.toFixed(1) })}</span>
               </div>
             </div>
 
@@ -532,10 +534,10 @@ export default function ReviewAnalysis({ fileId }: ReviewAnalysisProps) {
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="bg-slate-500/5 border-b border-card-border/50 text-muted">
-                    <th className="p-3">Future Period</th>
-                    <th className="p-3 text-right">Predicted Point</th>
-                    <th className="p-3 text-right">Lower Bound (95%)</th>
-                    <th className="p-3 text-right">Upper Bound (95%)</th>
+                    <th className="p-3">{t("review.predict.period")}</th>
+                    <th className="p-3 text-right">{t("review.predict.point")}</th>
+                    <th className="p-3 text-right">{t("review.predict.lower")}</th>
+                    <th className="p-3 text-right">{t("review.predict.upper")}</th>
                   </tr>
                 </thead>
                 <tbody>

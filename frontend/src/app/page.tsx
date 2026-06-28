@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Sparkles, Moon, Sun, Layers, ArrowLeft, RefreshCw, LogOut, CheckCircle2, ChevronRight, BarChart2, Zap, Brain, Shield, TrendingUp, Cpu, Loader2 } from "lucide-react";
+import { Sparkles, Moon, Sun, Layers, ArrowLeft, RefreshCw, LogOut, CheckCircle2, ChevronRight, BarChart2, Zap, Brain, Shield, TrendingUp, Cpu, Loader2, MoreVertical } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import Dropzone from "../components/Dropzone";
@@ -10,10 +10,13 @@ import DashboardGrid from "../components/DashboardGrid";
 import AiChatbot from "../components/AiChatbot";
 
 import { api } from "../utils/api";
+import { useTranslation } from "../utils/LanguageContext";
 
 type ActiveTab = "review" | "visuals" | "chat";
 
 export default function Home() {
+  const { language, setLanguage, t } = useTranslation();
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [fileDetails, setFileDetails] = useState<any | null>(null);
   
@@ -32,21 +35,31 @@ export default function Home() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const processingSteps = [
-    "Uploading dataset workbook...",
-    "Reading file schemas...",
-    "Understanding domain structures...",
-    "Cleaning duplicate rows and null values...",
-    "Running deep statistical analysis...",
-    "Generating executive AI insights...",
-    "Creating interactive BI dashboards...",
-    "Preparing chatbot co-pilot assistant..."
+    t("loader.step0"),
+    t("loader.step1"),
+    t("loader.step2"),
+    t("loader.step3"),
+    t("loader.step4"),
+    t("loader.step5"),
+    t("loader.step6"),
+    t("loader.step7")
   ];
+
+  const [showTranslatePrompt, setShowTranslatePrompt] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
     const initialTheme = savedTheme || "dark";
     setTheme(initialTheme);
     document.documentElement.setAttribute("data-theme", initialTheme);
+
+    const savedLang = localStorage.getItem("lang-prompt-decided");
+    if (!savedLang) {
+      const browserLang = navigator.language;
+      if (browserLang.startsWith("en") || !browserLang.startsWith("ta")) {
+        setShowTranslatePrompt(true);
+      }
+    }
   }, []);
 
   const toggleTheme = () => {
@@ -167,38 +180,106 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col transition-colors duration-300">
-      {/* Header bar */}
-      <header className="sticky top-0 z-40 bg-yellow-400/95 backdrop-blur-md border-b border-yellow-500/50 px-6 py-4 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-2.5 cursor-pointer" onClick={handleReset}>
-          <div className="h-9 w-9 rounded-xl bg-black flex items-center justify-center text-yellow-400 font-bold shadow-md">
-            L
-          </div>
-          <div>
-            <h1 className="font-extrabold text-base text-black tracking-tight leading-none text-brand-title">Lakshmi Steels AI</h1>
-            <span className="text-[10px] text-black/70 font-semibold block leading-none mt-1">Automated AI Data Analyst & BI</span>
-          </div>
-        </div>
+    <div className="min-h-screen flex flex-col pt-15 transition-colors duration-300">
+      {/* Floating Navbar */}
+<header className="fixed top-3 left-1/2 -translate-x-1/2 z-50">
+  <div className="flex items-center rounded-full border border-yellow-500/15 bg-zinc-950/75 backdrop-blur-2xl px-6 py-2.5 shadow-[0_20px_60px_rgba(0,0,0,0.45)] transition-all duration-300 hover:border-yellow-500/30 hover:shadow-[0_20px_70px_rgba(234,179,8,0.12)]">
 
-        <div className="flex items-center gap-4">
+    <button
+      onClick={handleReset}
+      className="flex items-center gap-3 group"
+    >
+      {/* Logo */}
+      <div className="h-10 w-10 overflow-hidden rounded-full border border-yellow-500/25 bg-zinc-900 shadow-md transition-all duration-300 group-hover:scale-105">
+        <img
+          src="vercel.svg"
+          alt="Lakshmi Steels"
+          className="h-full w-full object-cover"
+        />
+      </div>
+
+      {/* Brand */}
+      <div className="leading-tight">
+        <h1 className="text-lg font-bold text-yellow-400 transition-colors duration-300 group-hover:text-yellow-300">
+          Lakshmi Steels
+        </h1>
+
+        <p className="text-[10px] uppercase tracking-[0.35em] text-zinc-400">
+          Construction Materials
+        </p>
+      </div>
+    </button>
+
+  </div>
+</header>
+
+      {/* Top Right Actions Menu */}
+      <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
+        {fileDetails && (
           <button
-            onClick={toggleTheme}
-            className="h-9 w-9 rounded-xl border border-black/10 flex items-center justify-center text-black/70 hover:text-black hover:bg-black/5 transition cursor-pointer"
+            onClick={handleReset}
+            className="group flex items-center gap-2 px-4 py-2 rounded-full border border-rose-500/20 bg-zinc-950/70 backdrop-blur-xl text-sm font-semibold text-rose-400 shadow-[0_10px_30px_rgba(0,0,0,0.35)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:scale-105 hover:bg-rose-500/10 hover:border-rose-400/50 hover:text-rose-300 hover:shadow-[0_15px_40px_rgba(244,63,94,0.25)] active:scale-95 cursor-pointer"
           >
-            {theme === "light" ? <Moon className="h-4.5 w-4.5" /> : <Sun className="h-4.5 w-4.5" />}
+            <LogOut className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{t("header.closeDataset")}</span>
           </button>
+        )}
 
-          {fileDetails && (
-            <button
-              onClick={handleReset}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-danger/25 text-danger bg-danger/5 hover:bg-danger/10 text-xs font-semibold transition cursor-pointer"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Close Dataset</span>
-            </button>
-          )}
+        <div className="relative">
+          <button 
+            onClick={() => setLangMenuOpen(!langMenuOpen)}
+            className="h-10 w-10 rounded-full bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white shadow-xl cursor-pointer hover:bg-zinc-900 transition-colors"
+          >
+            <MoreVertical className="h-5 w-5" />
+          </button>
+          
+          <AnimatePresence>
+            {langMenuOpen && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                className="absolute right-0 mt-2 w-48 rounded-2xl border border-zinc-800 bg-zinc-950 p-2 shadow-2xl z-50 flex flex-col space-y-2"
+              >
+                <div className="text-[10px] font-bold text-zinc-500 uppercase px-2 pt-2 tracking-wider">Settings</div>
+                <button
+                  onClick={toggleTheme}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold text-zinc-300 hover:bg-zinc-900 hover:text-white transition-colors cursor-pointer"
+                >
+                  <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
+                  {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                </button>
+                
+                <div className="h-px bg-zinc-800 my-1 mx-2" />
+                
+                <div className="text-[10px] font-bold text-zinc-500 uppercase px-2 pt-1 tracking-wider">Language</div>
+                <button
+                  onClick={() => {
+                    setLanguage("ta");
+                    setLangMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                    language === "ta" ? "bg-yellow-500/10 text-yellow-500" : "text-zinc-300 hover:bg-zinc-900 hover:text-white"
+                  }`}
+                >
+                  தமிழ்
+                </button>
+                <button
+                  onClick={() => {
+                    setLanguage("en");
+                    setLangMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                    language === "en" ? "bg-yellow-500/10 text-yellow-500" : "text-zinc-300 hover:bg-zinc-900 hover:text-white"
+                  }`}
+                >
+                  English
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </header>
+      </div>
 
       {/* Main Panel Content */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-8 flex flex-col justify-center">
@@ -214,8 +295,8 @@ export default function Home() {
             >
               <div className="flex flex-col items-center space-y-3">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <h3 className="text-xl font-bold text-foreground">Intelligent Agent Analysis Running</h3>
-                <p className="text-xs text-muted">Please wait while the AI Analyst processes your data workbook.</p>
+                <h3 className="text-xl font-bold text-foreground">{t("loader.title")}</h3>
+                <p className="text-xs text-muted">{t("loader.desc")}</p>
               </div>
 
               {/* Progress Bar */}
@@ -264,13 +345,13 @@ export default function Home() {
               <div className="text-center space-y-6 max-w-3xl mx-auto glass-card p-8 sm:p-12 mb-8">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/20 border border-primary/30 text-xs text-primary font-bold uppercase tracking-wider">
                   <Sparkles className="h-4 w-4 fill-current animate-pulse" />
-                  <span>Cognitive Business Analytics Engine</span>
+                  <span>{t("landing.tag")}</span>
                 </div>
                 <h2 className="text-4xl md:text-5xl font-extrabold text-foreground tracking-tight leading-tight">
-                  Intelligent <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent drop-shadow-sm">AI Business Intelligence</span> Platform
+                  {t("landing.title")}
                 </h2>
                 <p className="text-foreground font-medium text-sm md:text-base leading-relaxed">
-                  Upload any Excel or CSV spreadsheet. Within seconds, our system cleans the cells, builds visual Tableau-style dashboards, compiles descriptive statistics, and provisions an AI assistant co-pilot.
+                  {t("landing.desc")}
                 </p>
               </div>
 
@@ -288,16 +369,16 @@ export default function Home() {
 
               <div className="space-y-4 pt-10">
                 <h3 className="text-center text-xs font-bold text-muted uppercase tracking-widest">
-                  End-to-End Automated Capabilities
+                  {t("capabilities.title")}
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   <div className="glass-card p-6 space-y-3 hover:border-primary/20 transition-all">
                     <div className="h-10 w-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0">
                       <Shield className="h-5.5 w-5.5" />
                     </div>
-                    <h4 className="font-bold text-sm text-foreground">Automatic Cleaning</h4>
+                    <h4 className="font-bold text-sm text-foreground">{t("capabilities.clean.title")}</h4>
                     <p className="text-xs text-muted leading-relaxed">
-                      Removes row duplicates, fills missing items with standard mean/mode, normalizes phone/emails structure, and clips numerical outliers.
+                      {t("capabilities.clean.desc")}
                     </p>
                   </div>
 
@@ -305,9 +386,9 @@ export default function Home() {
                     <div className="h-10 w-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0">
                       <BarChart2 className="h-5.5 w-5.5" />
                     </div>
-                    <h4 className="font-bold text-sm text-foreground">Descriptive Profiling</h4>
+                    <h4 className="font-bold text-sm text-foreground">{t("capabilities.profile.title")}</h4>
                     <p className="text-xs text-muted leading-relaxed">
-                      Calculates skewness, kurtosis, mode, standard deviation, and variance values across all variables instantly.
+                      {t("capabilities.profile.desc")}
                     </p>
                   </div>
 
@@ -315,9 +396,9 @@ export default function Home() {
                     <div className="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
                       <Brain className="h-5.5 w-5.5" />
                     </div>
-                    <h4 className="font-bold text-sm text-foreground">Interactive Chat Co-pilot</h4>
+                    <h4 className="font-bold text-sm text-foreground">{t("capabilities.chat.title")}</h4>
                     <p className="text-xs text-muted leading-relaxed">
-                      Pose questions directly to your dataset co-pilot about sales trends, regional outcomes, or statistics calculations.
+                      {t("capabilities.chat.desc")}
                     </p>
                   </div>
                 </div>
@@ -338,16 +419,16 @@ export default function Home() {
                 {/* Active File metadata card */}
                 <div className="glass-card p-4 space-y-3.5">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Loaded Database</span>
+                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider">{t("meta.loadedDb")}</span>
                     <h3 className="font-bold text-sm text-foreground truncate">{fileDetails.filename}</h3>
                     <p className="text-xs text-muted">
-                      Sheet: <span className="font-semibold text-foreground">{fileDetails.active_sheet}</span>
+                      {t("meta.sheet", { sheet: fileDetails.active_sheet })}
                     </p>
                   </div>
 
                   {fileDetails.sheets.length > 1 && (
                     <div className="space-y-1.5">
-                      <span className="text-[10px] font-bold text-muted uppercase">Select Active Worksheet</span>
+                      <span className="text-[10px] font-bold text-muted uppercase">{t("meta.selectSheet")}</span>
                       <select
                         value={fileDetails.active_sheet}
                         onChange={(e) => handleSheetChange(e.target.value)}
@@ -365,12 +446,12 @@ export default function Home() {
 
                   <div className="pt-2 border-t border-card-border/50 grid grid-cols-2 gap-2 text-center">
                     <div className="p-2 rounded bg-slate-500/5">
-                      <span className="text-[9px] font-bold text-muted uppercase block">KPI Domain</span>
+                      <span className="text-[9px] font-bold text-muted uppercase block">{t("meta.kpiDomain")}</span>
                       <span className="text-xs font-bold text-foreground truncate block">{fileDetails.domain}</span>
                     </div>
                     <div className="p-2 rounded bg-slate-500/5">
-                      <span className="text-[9px] font-bold text-muted uppercase block">Data Status</span>
-                      <span className="text-xs font-bold text-emerald-500 block">Cleaned</span>
+                      <span className="text-[9px] font-bold text-muted uppercase block">{t("meta.dataStatus")}</span>
+                      <span className="text-xs font-bold text-emerald-500 block">{t("meta.cleaned")}</span>
                     </div>
                   </div>
                 </div>
@@ -378,9 +459,9 @@ export default function Home() {
                 {/* 3 primary tabs navigation list */}
                 <nav className="glass-card p-2 flex flex-col space-y-1">
                   {[
-                    { id: "review", label: "1. Review Analysis", sub: "Descriptive & KPI profiling" },
-                    { id: "visuals", label: "2. Visual Dashboard", sub: "ECharts BI comparisons" },
-                    { id: "chat", label: "3. Chat With Data", sub: "Gemini conversational RAG" },
+                    { id: "review", label: t("tab.review"), sub: t("tab.review.sub") },
+                    { id: "visuals", label: t("tab.visuals"), sub: t("tab.visuals.sub") },
+                    { id: "chat", label: t("tab.chat"), sub: t("tab.chat.sub") },
                   ].map((tab) => {
                     const isSelected = activeTab === tab.id;
                     return (
@@ -404,11 +485,11 @@ export default function Home() {
               </div>
 
               {/* Central pane taking up 3/4 columns full-width */}
-              <div className="lg:col-span-3 min-h-[500px]">
+              <div className="lg:col-span-3 min-h-125">
                 {loading ? (
                   <div className="glass-card p-20 text-center flex flex-col items-center justify-center space-y-4">
                     <RefreshCw className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-sm font-semibold text-muted">Compiling data analysis caching matrices...</p>
+                    <p className="text-sm font-semibold text-muted">{t("loader.compiling")}</p>
                   </div>
                 ) : (
                   <>
@@ -432,6 +513,176 @@ export default function Home() {
           )}
         </AnimatePresence>
       </main>
+
+      {/* Overall Footer */}
+<footer className="w-full mt-24 border-t border-zinc-800 bg-zinc-950/95">
+  <div className="max-w-7xl mx-auto px-6 py-16">
+
+    {/* Logo & Brand */}
+    <div className="flex flex-col items-center text-center">
+
+      <div className="h-16 w-16 rounded-2xl overflow-hidden border border-yellow-500/20 bg-zinc-900 shadow-xl transition-all duration-300 hover:scale-105 hover:border-yellow-500/40">
+        <img
+          src="/vercel.svg"
+          alt="Lakshmi Steels"
+          className="h-full w-full object-cover"
+        />
+      </div>
+
+      <h2 className="mt-5 text-3xl font-black tracking-wide text-yellow-400">
+        {t("brand.title")}
+      </h2>
+
+      <p className="mt-2 text-sm uppercase tracking-[0.35em] text-zinc-400">
+        Premium Construction Materials
+      </p>
+
+    </div>
+
+    {/* Description */}
+    <div className="mt-10 max-w-4xl mx-auto text-center">
+      <p className="text-lg leading-9 text-zinc-300">
+        {t("footer.text")}
+      </p>
+    </div>
+
+    {/* Divider */}
+    <div className="my-12 h-px w-full bg-linear-to-r from-transparent via-zinc-700 to-transparent" />
+
+    {/* Footer Links / Highlights */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+
+      <div>
+        <h4 className="text-white font-bold text-lg mb-3">
+          Products
+        </h4>
+
+        <p className="text-zinc-400 leading-8">
+          Cement<br />
+          TMT Bars<br />
+          Steel Products<br />
+          Tiles & Sanitary Ware
+        </p>
+      </div>
+
+      <div>
+        <h4 className="text-white font-bold text-lg mb-3">
+          Our Commitment
+        </h4>
+
+        <p className="text-zinc-400 leading-8">
+          Quality Products<br />
+          Trusted Brands<br />
+          Competitive Pricing<br />
+          Reliable Service
+        </p>
+      </div>
+
+      <div>
+        <h4 className="text-white font-bold text-lg mb-3">
+          Serving
+        </h4>
+
+        <p className="text-zinc-400 leading-8">
+          Builders<br />
+          Contractors<br />
+          Engineers<br />
+          Homeowners
+        </p>
+      </div>
+
+    </div>
+
+    {/* Bottom */}
+    <div className="mt-14 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-zinc-800 pt-8">
+
+      <p className="text-sm text-zinc-500">
+        © {new Date().getFullYear()}{" "}
+        <span className="font-semibold text-zinc-300">
+          {t("brand.title")}
+        </span>
+        . All Rights Reserved.
+      </p>
+
+      <p className="text-sm font-medium tracking-wide text-yellow-400">
+        Building Strength • Delivering Trust
+      </p>
+
+    </div>
+
+  </div>
+</footer>
+      {/* Browser translation request prompt popup modal */}
+      <AnimatePresence>
+        {showTranslatePrompt && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowTranslatePrompt(false)}
+              className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
+            />
+
+            {/* Modal Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl z-10 space-y-6"
+            >
+              {/* Amber highlight glow */}
+              <div className="absolute -top-24 -left-24 h-48 w-48 bg-yellow-500/10 rounded-full blur-2xl pointer-events-none" />
+
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center p-0 overflow-hidden shadow-md">
+                  <img src="/vercel.svg" alt="Logo" className="w-full h-full object-cover rounded-xl" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-sm text-yellow-400 leading-tight">Language / மொழியைத் தேர்ந்தெடுக்கவும்</h3>
+                  <span className="text-[10px] text-zinc-400 font-semibold block leading-none mt-1">Translate Interface</span>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-zinc-300 text-xs leading-relaxed">
+                <p>
+                  We detected your browser language is English. Would you like to switch the interface to English?
+                </p>
+                <p className="text-zinc-400 font-semibold">
+                  உங்கள் உலாவி மொழி ஆங்கிலமாக உள்ளதை நாங்கள் கவனிக்கிறோம். லக்ஷ்மி ஸ்டீல்ஸ் இணையதளத்தை ஆங்கிலத்திற்கு மாற்ற விரும்புகிறீர்களா?
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLanguage("en");
+                    localStorage.setItem("lang-prompt-decided", "en");
+                    setShowTranslatePrompt(false);
+                  }}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-yellow-500 hover:bg-yellow-400 text-black font-extrabold text-xs shadow-md transition duration-150 cursor-pointer text-center"
+                >
+                  English / Switch to English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLanguage("ta");
+                    localStorage.setItem("lang-prompt-decided", "ta");
+                    setShowTranslatePrompt(false);
+                  }}
+                  className="flex-1 py-2.5 px-4 rounded-xl border border-zinc-800 hover:bg-zinc-900 text-zinc-300 font-bold text-xs transition duration-150 cursor-pointer text-center"
+                >
+                  தமிழ் / Keep Tamil
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+

@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
-PHONE_REGEX = re.compile(r"^\+?1?\s*\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$")
+PHONE_REGEX = re.compile(r"^(?:\+91|0)?[6-9]\d{9}$|^\+?1?\s*\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$")
 
 def generate_rec_id() -> str:
     return str(uuid.uuid4())[:8]
@@ -86,7 +86,7 @@ def detect_cleaning_recommendations(df: pd.DataFrame) -> list:
                 })
 
             # 5. Currency Formats disguised as strings
-            currency_match = str_series.apply(lambda x: bool(re.search(r"^\s*[\$\u20AC\u00A3]\s*\d+|^[\d,]+\s*[\$\u20AC\u00A3]", x)))
+            currency_match = str_series.apply(lambda x: bool(re.search(r"^\s*[\$\u20AC\u00A3\u20B9]\s*\d+|^[\d,]+\s*[\$\u20AC\u00A3\u20B9]", x)))
             currency_count = int(currency_match.sum())
             if currency_count > len(str_series) * 0.5:
                 recommendations.append({
@@ -289,10 +289,12 @@ def apply_cleaning_recommendations(df: pd.DataFrame, recommendations: list, sele
                 if pd.isna(x): return x
                 clean_num = re.sub(r"\D", "", str(x)) # keep digits only
                 if len(clean_num) == 10:
-                    return f"({clean_num[:3]}) {clean_num[3:6]}-{clean_num[6:]}"
+                    return f"+91 {clean_num[:5]}-{clean_num[5:]}"
+                elif len(clean_num) == 12 and clean_num.startswith("91"):
+                    return f"+91 {clean_num[2:7]}-{clean_num[7:]}"
                 elif len(clean_num) == 11 and clean_num.startswith("1"):
                     return f"+1 ({clean_num[1:4]}) {clean_num[4:7]}-{clean_num[7:]}"
-                return str(x).strip() # return cleaned string if not 10/11 digits
+                return str(x).strip() # return cleaned string if not matching standard formats
             cleaned_df[col] = series.apply(clean_phone)
             audit_logs.append(f"Column '{col}': Standardized telephone number syntax formats.")
             

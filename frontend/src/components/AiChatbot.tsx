@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Send, Sparkles, Loader2, Bot, User, ArrowRight } from "lucide-react";
+import { Send, Sparkles, Loader2, Bot, User } from "lucide-react";
 import { api } from "../utils/api";
+import { useTranslation } from "../utils/LanguageContext";
 
 interface AiChatbotProps {
   fileId: string;
@@ -16,16 +17,17 @@ interface Message {
 }
 
 export default function AiChatbot({ fileId }: AiChatbotProps) {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const samplePrompts = [
-    "Summarize this dataset",
-    "Find anomalies in this data",
-    "Show statistical averages",
-    "What columns are present?",
+    t("chat.prompt.summarize"),
+    t("chat.prompt.anomalies"),
+    t("chat.prompt.averages"),
+    t("chat.prompt.columns"),
   ];
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function AiChatbot({ fileId }: AiChatbotProps) {
           {
             id: "welcome",
             role: "assistant",
-            content: "Hi! I'm **Lakshmi Steels AI**, your smart data co-pilot. Drop a question about your spreadsheet below! I can compute averages, list columns, find outliers, or generate narrative analyses.",
+            content: t("chat.welcome"),
           },
         ]);
       } else {
@@ -84,7 +86,7 @@ export default function AiChatbot({ fileId }: AiChatbotProps) {
       const errorMsg: Message = {
         id: Math.random().toString(),
         role: "assistant",
-        content: "Sorry, I encountered an issue processing that query. Please verify connection and try again.",
+        content: t("chat.error"),
       };
       setMessages((prev) => [...prev, errorMsg]);
     } finally {
@@ -111,8 +113,8 @@ export default function AiChatbot({ fileId }: AiChatbotProps) {
           <Sparkles className="h-4.5 w-4.5 fill-current animate-pulse" />
         </div>
         <div>
-          <h4 className="font-bold text-sm text-foreground">Interactive Dataset Chat</h4>
-          <span className="text-[10px] text-muted block leading-none">Powered by Gemini AI Semantic RAG</span>
+          <h4 className="font-bold text-sm text-foreground">{t("chat.title")}</h4>
+          <span className="text-[10px] text-muted block leading-none">{t("chat.subtitle")}</span>
         </div>
       </div>
 
@@ -153,7 +155,7 @@ export default function AiChatbot({ fileId }: AiChatbotProps) {
             </div>
             <div className="px-4 py-3 rounded-2xl bg-card-bg border border-card-border text-muted rounded-tl-sm flex items-center gap-2">
               <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
-              <span className="text-xs">Analyzing data structures...</span>
+              <span className="text-xs">{t("chat.analyzing")}</span>
             </div>
           </div>
         )}
@@ -186,7 +188,7 @@ export default function AiChatbot({ fileId }: AiChatbotProps) {
         >
           <input
             type="text"
-            placeholder="Ask anything about your data..."
+            placeholder={t("chat.placeholder")}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}

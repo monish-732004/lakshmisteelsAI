@@ -57,8 +57,15 @@ def generate_dataset_insights(profile: dict, domain: str) -> dict:
                 
             model = genai.GenerativeModel("gemini-1.5-flash")
             
-            prompt = f"""You are a professional business intelligence and data analysis expert.
-Analyze this dataset profile snapshot and generate a highly professional SaaS-style executive report.
+            prompt = f"""You are an expert business assistant for a store owner (Lakshmi Steels).
+Analyze this dataset profile snapshot and generate a simple, easy-to-understand layman's report for the owner explaining how the data affects their business.
+The owner wants to know:
+1. What sells the most (top selling product or category).
+2. Who is the biggest customer (most frequent buyer).
+3. How much profit or revenue they are making (use the Rupees symbol '₹' instead of '$').
+4. Plain-language business opportunities and risks, specifically detailing how the findings (like data quality issues, duplicates, anomalies, or sales trends) affect their daily operations, inventory, and profitability.
+
+Do NOT use complex statistical jargon (like "standard deviation", "kurtosis", "regression", or "correlation matrix"). Translate technical terms to everyday retail terms (e.g., instead of "positive correlation between X and Y", say "when sales of X go up, sales of Y also tend to go up; this means you should stock them together").
 
 Dataset Profile Metadata:
 - Domain: {domain}
@@ -70,15 +77,15 @@ Dataset Profile Metadata:
 
 Format the response strictly as a JSON object with these keys (do not include any markdown fences or extra text, just raw JSON):
 {{
-  "executive_summary": "A concise paragraph summary of the dataset scope, size, health, and main focus.",
+  "executive_summary": "A friendly layman's summary of the business operations, total rows, and overall performance, noting what sells most and who is the biggest customer.",
   "key_insights": [
-    "Insight 1 (Include numbers, percentage changes or correlations if visible)",
+    "Insight 1: simple sales observation or trend...",
     "Insight 2...",
     "Insight 3..."
   ],
   "anomalies": [
-    "Anomaly 1 (Mention outliers, nulls, or duplicate problems)",
-    "Anomaly 2..."
+    "Problem 1: simple description of missing or incorrect data...",
+    "Problem 2..."
   ]
 }}
 """
@@ -95,48 +102,79 @@ Format the response strictly as a JSON object with these keys (do not include an
             # Fallback on Gemini error
             pass
 
-    # --- RULE-BASED FALLBACK GENERATOR ---
+    # --- RULE-BASED FALLBACK GENERATOR (LAYMAN TERMS & RUPEES) ---
     total_rows = profile["total_rows"]
     total_columns = profile["total_columns"]
     quality = profile["data_quality_score"]
     
-    summary = f"This dataset contains {total_rows} records across {total_columns} columns, structured under the '{domain}' domain taxonomy. It scores {quality}/100 on overall data quality, with duplicate rows accounting for {profile['duplicate_rows']} records."
-    
-    key_insights = []
-    anomalies = []
-    
-    # Generate insights from numeric statistics
-    numeric_cols = [c for c in profile["columns"] if c["type"] == "numeric"]
-    if numeric_cols:
-        for col in numeric_cols[:3]:
-            stats = col["stats"]
-            if "mean" in stats and stats["mean"] is not None:
-                key_insights.append(f"Column '{col['name']}' has an average value of {stats['mean']:.2f}, ranging from {stats['min']:.2f} to {stats['max']:.2f}.")
-    
-    # Generate insights from categorical/text statistics
-    cat_cols = [c for c in profile["columns"] if c["type"] == "categorical"]
-    if cat_cols:
-        for col in cat_cols[:2]:
-            top_vals = col["stats"].get("top_values", [])
-            if top_vals:
-                top_str = ", ".join([f"'{v['value']}' ({v['count']} times)" for v in top_vals[:2]])
-                key_insights.append(f"For categorical field '{col['name']}', the most frequent entries are {top_str}.")
-                
-    if not key_insights:
-        key_insights.append("Historical distributions look uniform. Clean outliers or adjust formatting to identify clear trends.")
+    top_product = "N/A"
+    top_product_count = 0
+    top_customer = "N/A"
+    top_customer_count = 0
+    total_sales = 0.0
+    sales_col_name = ""
+    avg_sale_val = 0.0
+
+    for col in profile.get("columns", []):
+        cname = col["name"].lower()
+        top_vals = col["stats"].get("top_values", [])
         
-    # Generate anomaly notes
+        # Identify Product / Category
+        if "product" in cname or "category" in cname or "item" in cname:
+            if top_vals and top_product == "N/A":
+                top_product = top_vals[0]["value"]
+                top_product_count = top_vals[0]["count"]
+                
+        # Identify Customer
+        if "customer" in cname or "email" in cname or "buyer" in cname or "phone" in cname:
+            if top_vals and top_customer == "N/A":
+                top_customer = top_vals[0]["value"]
+                top_customer_count = top_vals[0]["count"]
+
+        # Identify Sales / Revenue / Amount
+        if "revenue" in cname or "sales" in cname or "price" in cname or "profit" in cname or "amount" in cname:
+            mean_val = col["stats"].get("mean")
+            if mean_val is not None:
+                sales_col_name = col["name"]
+                avg_sale_val = mean_val
+                total_sales = mean_val * total_rows
+
+    # Generate summary string in layman language
+    summary = f"This dataset records your business transactions. It contains **{total_rows} total entries** with **{total_columns} columns**."
+    if top_product != "N/A":
+        summary += f" Based on the data, your best-selling product or category is **'{top_product}'** (recorded {top_product_count} times)."
+    if top_customer != "N/A":
+        summary += f" Your most frequent customer is **'{top_customer}'** (with {top_customer_count} occurrences)."
+    if total_sales > 0:
+        summary += f" Estimated total business volume for '{sales_col_name}' is approximately **₹{total_sales:,.2f}**."
+
+    # Insights list in layman language
+    key_insights = []
+    if top_product != "N/A":
+        key_insights.append(f"Top-selling product is '{top_product}' ({top_product_count} sales). Keep stock level high for this item.")
+    if top_customer != "N/A":
+        key_insights.append(f"Most frequent client is '{top_customer}' ({top_customer_count} transactions). Consider offering them a loyalty reward.")
+    if total_sales > 0:
+        key_insights.append(f"Average transaction amount for '{sales_col_name}' is ₹{avg_sale_val:,.2f}.")
+
+    if not key_insights:
+        key_insights.append("Your sales appear uniform. Record more product descriptions and transaction prices to reveal trends.")
+
+    # Anomalies in layman language
+    anomalies = []
     if profile["duplicate_rows"] > 0:
-        anomalies.append(f"Detected {profile['duplicate_rows']} duplicate rows. Consider invoking the duplicate elimination cleaning rule.")
+        anomalies.append(f"Found {profile['duplicate_rows']} duplicate transaction entries. Run the auto-clean pipeline to merge them.")
     
-    for col in profile["columns"]:
-        if col["null_count"] > 0:
-            anomalies.append(f"Column '{col['name']}' contains {col['null_count']} missing fields ({col['null_percentage']:.1f}%). Recommend filling or dropping.")
-        if col["outlier_count"] > 0:
-            anomalies.append(f"Column '{col['name']}' has {col['outlier_count']} outliers that lie outside standard statistical boundaries.")
+    for col in profile.get("columns", []):
+        null_count = col.get("null_count", 0)
+        outlier_count = col.get("outlier_count", 0)
+        if null_count > 0:
+            anomalies.append(f"Column '{col['name']}' has {null_count} blank entries. Recommend auto-cleaning to fill them.")
+        if outlier_count > 0:
+            anomalies.append(f"Column '{col['name']}' has {outlier_count} unusually high or low values (outliers). Check these for entry mistakes.")
 
     if not anomalies:
-        anomalies.append("No critical missing values or formatting anomalies detected. The dataset structure looks clean.")
+        anomalies.append("All transactions are cleanly formatted. No missing fields detected.")
 
     return {
         "executive_summary": summary,
@@ -167,7 +205,7 @@ def answer_dataset_query(df: pd.DataFrame, profile: dict, chat_history: list, us
             model = genai.GenerativeModel("gemini-1.5-flash")
             
             prompt = f"""You are Lakshmi Steels AI, a professional interactive business analyst chatbot.
-Your role is to answer user queries about their uploaded dataset. Use the statistics and sample data below.
+Your role is to answer user queries about their uploaded dataset, translating findings into layman-friendly business explanations. Use the statistics and sample data below.
 
 Dataset Overview:
 - Size: {profile['total_rows']} rows, {profile['total_columns']} columns.
@@ -188,6 +226,7 @@ Guidelines:
 2. If the user asks for calculations (like sums, averages, or counts), do your best to estimate or use the column stats provided.
 3. Be clear and formatting-friendly (use lists, bold text where helpful).
 4. If you cannot answer based on the summary and sample, politely tell the user and outline what extra information is needed.
+5. Always use Rupees symbol '₹' instead of '$' for all currency values in your replies. Explain data insights in plain, layman terms, focusing on how it affects the user's business operations and profitability.
 """
             response = model.generate_content(prompt)
             return response.text.strip()

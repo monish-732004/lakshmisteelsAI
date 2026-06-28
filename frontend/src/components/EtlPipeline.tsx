@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Download, Layers, ShieldCheck, HardDrive, Play, Loader2, CheckCircle2, ChevronRight } from "lucide-react";
+import { Download, Layers, ShieldCheck, HardDrive, Play, Loader2 } from "lucide-react";
 import { api } from "../utils/api";
+import { useTranslation } from "../utils/LanguageContext";
 
 interface EtlPipelineProps {
   fileId: string;
@@ -14,7 +15,7 @@ type StageStatus = "idle" | "running" | "completed";
 
 interface EtlStage {
   name: StageName;
-  label: string;
+  labelKey: string;
   icon: React.ReactNode;
   status: StageStatus;
   message: string;
@@ -22,12 +23,13 @@ interface EtlStage {
 }
 
 export default function EtlPipeline({ fileId, onPipelineComplete }: EtlPipelineProps) {
+  const { t } = useTranslation();
   const [running, setRunning] = useState(false);
   const [stages, setStages] = useState<EtlStage[]>([
-    { name: "Extract", label: "Extract Data", icon: <Download className="h-5 w-5" />, status: "idle", message: "Extract file structure and dimensions", logs: [] },
-    { name: "Transform", label: "Transform Data", icon: <Layers className="h-5 w-5" />, status: "idle", message: "Coerce types, trim spaces, check metrics", logs: [] },
-    { name: "Validate", label: "Validate Data", icon: <ShieldCheck className="h-5 w-5" />, status: "idle", message: "Run outlier and structural checks", logs: [] },
-    { name: "Load", label: "Load Data", icon: <HardDrive className="h-5 w-5" />, status: "idle", message: "Save version snap, write cache database", logs: [] },
+    { name: "Extract", labelKey: "etl.stage.Extract", icon: <Download className="h-5 w-5" />, status: "idle", message: "Extract file structure and dimensions", logs: [] },
+    { name: "Transform", labelKey: "etl.stage.Transform", icon: <Layers className="h-5 w-5" />, status: "idle", message: "Coerce types, trim spaces, check metrics", logs: [] },
+    { name: "Validate", labelKey: "etl.stage.Validate", icon: <ShieldCheck className="h-5 w-5" />, status: "idle", message: "Run outlier and structural checks", logs: [] },
+    { name: "Load", labelKey: "etl.stage.Load", icon: <HardDrive className="h-5 w-5" />, status: "idle", message: "Save version snap, write cache database", logs: [] },
   ]);
   
   const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
@@ -97,8 +99,8 @@ export default function EtlPipeline({ fileId, onPipelineComplete }: EtlPipelineP
       {/* Pipeline Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h3 className="text-lg font-bold text-foreground">Interactive ETL Pipeline</h3>
-          <p className="text-sm text-muted">Extract raw data, normalize columns, validate rules, and index cache.</p>
+          <h3 className="text-lg font-bold text-foreground">{t("etl.title")}</h3>
+          <p className="text-sm text-muted">{t("etl.desc")}</p>
         </div>
         <button
           onClick={executeEtl}
@@ -108,12 +110,12 @@ export default function EtlPipeline({ fileId, onPipelineComplete }: EtlPipelineP
           {running ? (
             <>
               <Loader2 className="h-4.5 w-4.5 animate-spin" />
-              <span>Running...</span>
+              <span>{t("etl.running")}</span>
             </>
           ) : (
             <>
               <Play className="h-4.5 w-4.5 fill-current" />
-              <span>Trigger ETL Pipeline</span>
+              <span>{t("etl.runBtn")}</span>
             </>
           )}
         </button>
@@ -122,7 +124,6 @@ export default function EtlPipeline({ fileId, onPipelineComplete }: EtlPipelineP
       {/* Visual Pipeline Nodes */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
         {stages.map((stage, idx) => {
-          const isIdle = stage.status === "idle";
           const isRunning = stage.status === "running";
           const isCompleted = stage.status === "completed";
 
@@ -160,7 +161,7 @@ export default function EtlPipeline({ fileId, onPipelineComplete }: EtlPipelineP
                   {stage.icon}
                 </div>
 
-                <h4 className="font-bold text-sm text-foreground mb-1">{stage.label}</h4>
+                <h4 className="font-bold text-sm text-foreground mb-1">{t(stage.labelKey)}</h4>
                 <p className="text-[11px] text-muted line-clamp-2 leading-relaxed">{stage.message}</p>
               </div>
               
@@ -178,7 +179,7 @@ export default function EtlPipeline({ fileId, onPipelineComplete }: EtlPipelineP
       {/* Terminal logs panel */}
       <div className="glass-card bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
         <div className="bg-slate-900 border-b border-slate-800 px-4 py-2 flex items-center justify-between text-xs text-slate-400 font-mono">
-          <span>ETL Execution Logs</span>
+          <span>{t("etl.logs.header")}</span>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
             <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
@@ -187,7 +188,7 @@ export default function EtlPipeline({ fileId, onPipelineComplete }: EtlPipelineP
         </div>
         <div className="p-4 font-mono text-xs text-slate-300 space-y-1.5 h-48 overflow-y-auto select-text scrollbar-thin">
           {terminalLogs.length === 0 ? (
-            <div className="text-slate-500 italic">Logs will appear here once pipeline execution starts...</div>
+            <div className="text-slate-500 italic">{t("etl.logs.empty")}</div>
           ) : (
             terminalLogs.map((log, index) => {
               let colorClass = "text-slate-300";

@@ -1,15 +1,15 @@
 Order Date,Region,Category,Product,Quantity,Sales Price,Revenue,Customer Email,Phone Number
-2026-01-05,North,Electronics,Laptop,2,999.00,$1998.00,john.doe@gmail.com,123-456-7890
-2026/01/06, South ,Office Supplies,Paper,5,15.50,$77.50,jane.smith@yahoo.com,(987) 654-3210
-2026-01-05,North,Electronics,Laptop,2,999.00,$1998.00,john.doe@gmail.com,123-456-7890
-2026-01-08,West,Furniture,Chair,1,120.00,$120.00,bob.johnson@outlook.com,5551234567
-2026-01-09,,Furniture,Desk,1,250.00,$250.00,alice.williams@company,333-222-1111
-2026-01-10,North,Office Supplies,Pens,,4.99,,charlie.brown@gmail.com,444 555 6666
-2026-01-11,East,Electronics,Phone,-2,499.00,-$998.00,david.miller@gmail.com,555-444-3333
-2026-01-12,South,Office Supplies,Binder,10,2.50,$25.00,eve.davis@gmail.com,
-2026-01-13,West,Furniture,Chair,2,120.00,$240.00,frank.wilson@yahoo.com,777-888-9999
-2026-01-14,North,Electronics,Laptop,1,999.00,$999.00,grace.lee@gmail.com,888-999-0000
-2026-01-15,East,Furniture,Table,1,4500.00,$4500.00,henry.taylor@company.com,111-222-3333
-2026-01-05,North,Electronics,Laptop,2,999.00,$1998.00,john.doe@gmail.com,123-456-7890
-2026-01-17,South,Office Supplies,Paper,3,15.50,$46.50,isabella.clark@yahoo.com,222-333-4444
-2026-01-18,West,Electronics,Phone,1,499.00,$499.00,jack.lewis@gmail.com,333-444-5555
+2026-01-05,North,Cement,UltraTech Cement (50kg),20,450.00,₹9000.00,arun.kumar@gmail.com,9876543210
+2026/01/06, South ,TMT Bars,Tata Tiscon 12mm,50,380.00,₹19000.00,ramesh.patel@yahoo.com,(912) 345-6789
+2026-01-05,North,Cement,UltraTech Cement (50kg),20,450.00,₹9000.00,arun.kumar@gmail.com,98765-43210
+2026-01-08,West,Structural Steel,MS Angle 50x50x5,10,1200.00,₹12000.00,suresh.singh@outlook.com,8887776665
+2026-01-09,,Tiles,Kajaria Ceramic 2x2,15,250.00,₹3750.00,anil.sharma@company.in,333-222-1111
+2026-01-10,North,TMT Bars,Tata Tiscon 10mm,,350.00,,vijay.nair@gmail.com,999 888 7776
+2026-01-11,East,Structural Steel,MS Channel 100x50,-2,2499.00,-₹4998.00,dilip.mehta@gmail.com,9888777666
+2026-01-12,South,Cement,Dalmia DSP Cement,10,480.00,₹4800.00,karthik.s@gmail.com,
+2026-01-13,West,Tiles,Somany Vitrified 2x4,8,1200.00,₹9600.00,mohammad.ali@yahoo.com,777-888-9999
+2026-01-14,North,Cement,UltraTech Cement (50kg),10,450.00,₹4500.00,gita.reddy@gmail.com,888-999-0000
+2026-01-15,East,TMT Bars,JSW Neosteel 16mm,10,4500.00,₹45000.00,hari.krishnan@company.com,911-222-3333
+2026-01-05,North,Cement,UltraTech Cement (50kg),20,450.00,₹9000.00,arun.kumar@gmail.com,9876543210
+2026-01-17,South,TMT Bars,Tata Tiscon 12mm,15,380.00,₹5700.00,ismail.khan@yahoo.com,922-333-4444
+2026-01-18,West,Tiles,Kajaria Ceramic 2x2,10,250.00,₹2500.00,jay.shah@gmail.com,933-444-5555

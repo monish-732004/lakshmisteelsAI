@@ -1,9 +1,7 @@
 import axios from "axios";
 
 export const API_BASE_URL = typeof window !== "undefined"
-  ? (window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1")
-    ? "http://127.0.0.1:8000/api"
-    : "/api")
+  ? "/api"
   : (process.env.NEXT_PUBLIC_API_URL || "https://lakshmisteels-ai-wsry.vercel.app/api");
 
 export const api = {
@@ -109,7 +107,8 @@ export const api = {
 
   // Get downloads urls for PDF/Excel/CSV
   getExportUrl: (fileId: string, format: "excel" | "csv" | "pdf") => {
-    return `${API_BASE_URL}/export/${fileId}/${format}`;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || API_BASE_URL;
+    return `${baseUrl}/export/${fileId}/${format}`;
   },
 
   // Get comprehensive data analysis metrics
