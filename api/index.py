@@ -26,7 +26,9 @@ allowed_origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://lakshmisteels-ai-qb7v.vercel.app",
-    "https://lakshmisteels-ai-qb7v.vercel.app/"
+    "https://lakshmisteels-ai-qb7v.vercel.app/",
+    "https://lakshmi-steel.vercel.app",
+    "https://lakshmi-steel.vercel.app/"
 ]
 env_origins = os.getenv("ALLOWED_ORIGINS")
 if env_origins:
