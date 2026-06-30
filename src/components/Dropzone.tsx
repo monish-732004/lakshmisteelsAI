@@ -113,7 +113,7 @@ export default function Dropzone({ onUploadStart, onUploadSuccess, onUploadError
         <input
           ref={fileInputRef}
           type="file"
-          accept=".csv,.xlsx,.xls"
+          accept=".csv,.xlsx,.xls,.xml"
           onChange={handleFileChange}
           className="hidden"
         />

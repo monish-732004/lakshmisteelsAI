@@ -230,9 +230,9 @@ const translations: Record<Language, Record<string, string>> = {
     // Ingestion Landing
     "landing.tag": "Cognitive Business Analytics Engine",
     "landing.title": "Intelligent AI Business Intelligence Platform",
-    "landing.desc": "Upload any Excel or CSV spreadsheet. Within seconds, our system cleans the cells, builds visual Tableau-style dashboards, compiles descriptive statistics, and provisions an AI assistant co-pilot.",
+    "landing.desc": "Upload any Excel, CSV, or Tally XML spreadsheet. Within seconds, our system cleans the cells, builds visual Tableau-style dashboards, compiles descriptive statistics, and provisions an AI assistant co-pilot.",
     "landing.uploadHeader": "Upload your raw dataset",
-    "landing.uploadSub": "Drag & drop your Excel (.xlsx, .xls) or CSV files here, or click to browse files from your computer.",
+    "landing.uploadSub": "Drag & drop your Excel (.xlsx, .xls), CSV, or XML files here, or click to browse files from your computer.",
     "landing.uploadLimit": "Up to 50MB files supported",
     "landing.recentHeader": "Load a recently analyzed dataset",
     

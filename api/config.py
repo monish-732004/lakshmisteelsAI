@@ -6,9 +6,9 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api"
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     # Fallback to local SQLite DB
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./lakshmisteels.db")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:////tmp/lakshmisteels.db" if os.getenv("VERCEL", "") else "sqlite:///./lakshmisteels.db")
     # File upload storage directory (inside backend directory)
-    STORAGE_DIR: str = os.getenv("STORAGE_DIR", "./storage")
+    STORAGE_DIR: str = os.getenv("STORAGE_DIR", "/tmp/storage" if os.getenv("VERCEL", "") else "./storage")
     
     class Config:
         case_sensitive = True

@@ -3,7 +3,7 @@ import json
 import re
 import pandas as pd
 import google.generativeai as genai
-from app.config import settings
+from api.config import settings
 
 # Initialize Gemini if key exists
 if settings.GEMINI_API_KEY:

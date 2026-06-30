@@ -498,7 +498,7 @@ export default function Home() {
                     )}
                     
                     {activeTab === "visuals" && profile && (
-                      <DashboardGrid profile={profile} previewData={previewData} />
+                      <DashboardGrid fileId={fileDetails.file_id} profile={profile} previewData={previewData} />
                     )}
 
                     {activeTab === "chat" && (

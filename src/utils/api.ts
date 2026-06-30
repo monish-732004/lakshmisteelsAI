@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const API_BASE_URL = typeof window !== "undefined"
-  ? "/api"
-  : (process.env.NEXT_PUBLIC_API_URL || "https://lakshmisteels-ai-wsry.vercel.app/api");
+  ? (window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://127.0.0.1:8001/api" : "/api")
+  : "/api";
 
 export const api = {
   // Get health status

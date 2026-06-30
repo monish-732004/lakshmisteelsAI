@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, create_engine, Session
-from app.config import settings
+from api.config import settings
 
 connect_args = {}
 if settings.DATABASE_URL.startswith("sqlite"):
